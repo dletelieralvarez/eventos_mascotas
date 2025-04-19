@@ -61,7 +61,7 @@ public class EventoMascota {
      
      @NotBlank(message = "Fecha del Evento no puede estar vacía")
      //@Size(min = 1, max = 10, message = "Fecha del Evento debe tener entre 1 y 10 caracteres")
-     //@Pattern(regexp = "^\\d{2}/\\d{2}/\\d{4}$", message = "Fecha del Evento debe tener un formato dd/MM/yyyy")
+     @Pattern(regexp = "^\\d{2}/\\d{2}/\\d{4}$", message = "Fecha del Evento debe tener un formato dd/MM/yyyy")
      @FechaValida //validacion de la fecha 
      @Column(name = "FECHA_EVENTO") //nombre de la columna en la base de datos
      @JsonProperty("FECHA_EVENTO")
