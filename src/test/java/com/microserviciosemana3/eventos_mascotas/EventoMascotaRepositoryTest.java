@@ -1,4 +1,4 @@
-package com.microserviciosemana3;
+package com.microserviciosemana3.eventos_mascotas;
 import com.microserviciosemana3.eventos_mascotas.repository.EventoMascotaRepository;
 import com.microserviciosemana3.eventos_mascotas.EventosMascotasApplication;
 import com.microserviciosemana3.eventos_mascotas.model.EventoMascota;
@@ -16,10 +16,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 public class EventoMascotaRepositoryTest {
-    /*
+    
     @Autowired
     private EventoMascotaRepository eventoMascotaRepository;
-    
+    /*
     // Prueba de la creación de un EventoMascota
     @Test
     public void testGuardarEventoMascota() {
@@ -121,5 +121,5 @@ public class EventoMascotaRepositoryTest {
         Optional<EventoMascota> eliminado = eventoMascotaRepository.findById(5);
         assertFalse(eliminado.isPresent());
     }
-        */
+       */ 
 }
