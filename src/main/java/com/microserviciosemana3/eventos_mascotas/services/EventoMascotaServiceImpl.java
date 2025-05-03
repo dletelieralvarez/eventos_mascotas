@@ -8,15 +8,18 @@ import jakarta.annotation.PostConstruct;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class EventoMascotaServiceImpl implements EventoMascotaService {
-    @Autowired
-    private EventoMascotaRepository eventoMascotaRepository;
-
+    private final EventoMascotaRepository eventoMascotaRepository;
+    
+    public EventoMascotaServiceImpl(EventoMascotaRepository eventoMascotaRepository) {
+        this.eventoMascotaRepository = eventoMascotaRepository;
+         // inyeccion de dependencias
+    }
+    
     @Override
     public List<EventoMascota> getEventosMascotas() {
         log.debug("Servicio : getEventosMascotas()"); 

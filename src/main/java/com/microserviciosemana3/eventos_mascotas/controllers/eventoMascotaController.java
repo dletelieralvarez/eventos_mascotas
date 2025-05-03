@@ -1,19 +1,24 @@
 package com.microserviciosemana3.eventos_mascotas.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import com.microserviciosemana3.eventos_mascotas.model.ApiResult;
 import com.microserviciosemana3.eventos_mascotas.model.EventoMascota;
 import com.microserviciosemana3.eventos_mascotas.services.EventoMascotaService;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.data.jpa.repository.Query;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
@@ -58,7 +63,17 @@ public class eventoMascotaController {
             Optional<EventoMascota> eventoMascota = eventoMascotaService.getEventoMascotaPorId(idMascota);
             if(eventoMascota.isPresent()){
                 log.info("Evento Mascota encontrado con id: " + idMascota);
-                return ResponseEntity.ok(new ApiResult<>("Evento Mascota encontrado es : ", eventoMascota.get(), HttpStatus.OK.value()));}
+                
+                //links HATEOAS
+                List<Link> links = List.of(
+                    linkTo(methodOn(eventoMascotaController.class).retornaEventoMascotaPorId(idMascota)).withSelfRel(),
+                    linkTo(methodOn(eventoMascotaController.class).retornaTodosLosEventosDeMascotas()).withRel("Lista de Eventos Mascotas"),
+                    linkTo(methodOn(eventoMascotaController.class).crearEventoMascota(eventoMascota.get())).withRel("Crear Evento Mascota"),
+                    linkTo(methodOn(eventoMascotaController.class).actualizarEventoMascota(idMascota, eventoMascota.get())).withRel("Actualizar Evento Mascota"),
+                    linkTo(methodOn(eventoMascotaController.class).eliminarEventoMascota(idMascota)).withRel("Eliminar Evento Mascota")
+                );
+
+                return ResponseEntity.ok(new ApiResult<>("Evento Mascota encontrado es : ", eventoMascota.get(), HttpStatus.OK.value(), links));}
             else{
                 log.warn("No se encontro el evento de mascota con id: " + idMascota);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -77,10 +92,20 @@ public class eventoMascotaController {
             log.info("Post / eventos-mascotas - Se crea un nuevo evento de mascota");
             EventoMascota nuevoEvento = eventoMascotaService.crearEventoMascota(eventoMascota);
             
+             //links HATEOAS
+             List<Link> links = List.of(
+                linkTo(methodOn(eventoMascotaController.class).retornaEventoMascotaPorId(eventoMascota.getID_MASCOTA())).withSelfRel(),
+                linkTo(methodOn(eventoMascotaController.class).retornaTodosLosEventosDeMascotas()).withRel("Lista de Eventos Mascotas"),
+                linkTo(methodOn(eventoMascotaController.class).crearEventoMascota(eventoMascota)).withRel("Crear Evento Mascota"),
+                linkTo(methodOn(eventoMascotaController.class).actualizarEventoMascota(eventoMascota.getID_MASCOTA(), eventoMascota)).withRel("Actualizar Evento Mascota"),
+                linkTo(methodOn(eventoMascotaController.class).eliminarEventoMascota(eventoMascota.getID_MASCOTA())).withRel("Eliminar Evento Mascota")
+            );
+
             ApiResult<List<EventoMascota>> respuesta = new ApiResult<>(
                 "Evento Mascota creado con éxito",
                 List.of(nuevoEvento), 
-                HttpStatus.CREATED.value()
+                HttpStatus.CREATED.value(), 
+                links
             ); 
 
             return ResponseEntity.status(HttpStatus.CREATED).body(respuesta);
@@ -108,6 +133,15 @@ public class eventoMascotaController {
                        .body(new ApiResult<>("Evento Mascota no encontrado", null, HttpStatus.NOT_FOUND.value()));
             }
 
+             //links HATEOAS
+             List<Link> links = List.of(
+                linkTo(methodOn(eventoMascotaController.class).retornaEventoMascotaPorId(idMascota)).withSelfRel(),
+                linkTo(methodOn(eventoMascotaController.class).retornaTodosLosEventosDeMascotas()).withRel("Lista de Eventos Mascotas"),
+                linkTo(methodOn(eventoMascotaController.class).crearEventoMascota(eventoMascota)).withRel("Crear Evento Mascota"),
+                linkTo(methodOn(eventoMascotaController.class).actualizarEventoMascota(idMascota, eventoMascota)).withRel("Actualizar Evento Mascota"),
+                linkTo(methodOn(eventoMascotaController.class).eliminarEventoMascota(idMascota)).withRel("Eliminar Evento Mascota")
+            );
+
             //si el evento existe, se actualiza
             EventoMascota evento = eventoMascotaService.getEventoMascotaPorId(idMascota).get();
             evento.setNombreMascota(eventoMascota.getNombreMascota());
@@ -122,7 +156,7 @@ public class eventoMascotaController {
             EventoMascota eventoActualizado = eventoMascotaService.actualizarEventoMascota(evento, idMascota);
             //retornar el resultado con ApiResult
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ApiResult<>("Evento Mascota actualizado con éxito", List.of(eventoActualizado), HttpStatus.OK.value()));
+                    .body(new ApiResult<>("Evento Mascota actualizado con éxito", List.of(eventoActualizado), HttpStatus.OK.value(), links));
         }
         catch(Exception e){
             //en caso de error
@@ -144,12 +178,21 @@ public class eventoMascotaController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ApiResult<>("Evento Mascota no encontrado", null, HttpStatus.NOT_FOUND.value()));
             }
+            
+             //links HATEOAS
+             List<Link> links = List.of(
+                linkTo(methodOn(eventoMascotaController.class).retornaEventoMascotaPorId(idMascota)).withSelfRel(),
+                linkTo(methodOn(eventoMascotaController.class).retornaTodosLosEventosDeMascotas()).withRel("Lista de Eventos Mascotas"),
+                //linkTo(methodOn(eventoMascotaController.class).crearEventoMascota(eventoMascota)).withRel("Crear Evento Mascota"),
+                //linkTo(methodOn(eventoMascotaController.class).actualizarEventoMascota(idMascota, eventoMascota.get())).withRel("Actualizar Evento Mascota"),
+                linkTo(methodOn(eventoMascotaController.class).eliminarEventoMascota(idMascota)).withRel("Eliminar Evento Mascota")
+            );
 
             //si encuentra el evento lo elimina
             log.info("Evento Mascota encontrado con id: " + idMascota);
             eventoMascotaService.eliminarEventoMascota(idMascota);
             return ResponseEntity.status(HttpStatus.OK)            
-                    .body(new ApiResult<>("Evento Mascota eliminado con éxito", "ID Mascota eliminado: " + idMascota, HttpStatus.OK.value()));
+                    .body(new ApiResult<>("Evento Mascota eliminado con éxito", "ID Mascota eliminado: " + idMascota, HttpStatus.OK.value(), links));
         }
         catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -169,6 +212,7 @@ public class eventoMascotaController {
                         .body(new ApiResult<>("No se encontraron mascotas con ese nombre", null, HttpStatus.NOT_FOUND.value()));
             }
 
+            
             return ResponseEntity.ok(new ApiResult<>("Mascotas encontradas", resultados, HttpStatus.OK.value()));
         } catch (Exception e) {
             log.error("Error al buscar eventos por nombre: " + nombre, e);
