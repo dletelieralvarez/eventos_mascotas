@@ -1,16 +1,12 @@
 package com.microserviciosemana3.eventos_mascotas;
-import com.microserviciosemana3.eventos_mascotas.repository.EventoMascotaRepository;
-import com.microserviciosemana3.eventos_mascotas.EventosMascotasApplication;
 import com.microserviciosemana3.eventos_mascotas.model.EventoMascota;
+import com.microserviciosemana3.eventos_mascotas.repository.EventoMascotaRepository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 
-import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,10 +15,19 @@ public class EventoMascotaRepositoryTest {
     
     @Autowired
     private EventoMascotaRepository eventoMascotaRepository;
-    /*
+    
     // Prueba de la creación de un EventoMascota
     @Test
     public void testGuardarEventoMascota() {
+
+        //EventoMascota eventoMascota = new EventoMascota(1, "Firulais", "Labrador", "Juan Perez", "Competencia", "02/05/2025", "10:00", "Parque Central");
+        //eventoMascotaRepository.save(eventoMascota); 
+        //Optional<EventoMascota> eventoEncontrado = eventoMascotaRepository.findById(1);
+        //assertTrue(eventoEncontrado.isPresent());
+        //assertEquals("Firulais", eventoEncontrado.get().getNombreMascota());
+
+        
+        /* 
         EventoMascota eventoMascota = new EventoMascota();
         eventoMascota.setID_MASCOTA(1);
         eventoMascota.setNombreMascota("Firulais");
@@ -39,8 +44,9 @@ public class EventoMascotaRepositoryTest {
         assertNotNull(eventoGuardado);
         assertEquals(1, eventoGuardado.getID_MASCOTA());
         assertEquals("Firulais", eventoGuardado.getNombreMascota());
+        */
     }
-    
+    /*
     // Prueba de la búsqueda de un EventoMascota por ID
     @Test
     public void testEncontrarEventoMascotaPorId() {
@@ -122,4 +128,5 @@ public class EventoMascotaRepositoryTest {
         assertFalse(eliminado.isPresent());
     }
        */ 
+
 }
