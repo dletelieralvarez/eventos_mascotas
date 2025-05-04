@@ -1,4 +1,4 @@
-package com.microserviciosemana3;
+package com.microserviciosemana3.eventos_mascotas;
 import com.microserviciosemana3.eventos_mascotas.model.EventoMascota;
 import com.microserviciosemana3.eventos_mascotas.repository.EventoMascotaRepository;
 //import com.microserviciosemana3.eventos_mascotas.services.EventoMascotaService;

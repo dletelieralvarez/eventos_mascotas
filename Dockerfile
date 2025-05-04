@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY target/eventos_mascotas-0.0.1-SNAPSHOT.jar app.jar
 
-COPY Wallet /app/Wallet
+COPY Wallet_O30QTVJ7HXEFER8K /app/Wallet
 
 EXPOSE 8080
 

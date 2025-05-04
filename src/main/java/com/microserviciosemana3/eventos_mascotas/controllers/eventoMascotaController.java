@@ -1,6 +1,8 @@
 package com.microserviciosemana3.eventos_mascotas.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import com.microserviciosemana3.eventos_mascotas.model.ApiResult;
 import com.microserviciosemana3.eventos_mascotas.model.EventoMascota;
 import com.microserviciosemana3.eventos_mascotas.services.EventoMascotaService;
 //import org.springframework.data.jpa.repository.Query;
+import com.microserviciosemana3.eventos_mascotas.hateoas.EventoMascotaModelAssembler;
 
 import jakarta.validation.Valid;
 
@@ -18,6 +21,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -28,16 +33,18 @@ import lombok.extern.slf4j.Slf4j;
 
 public class eventoMascotaController {
     
-    @Autowired
+    //@Autowired
     //private final EventoMascotaService eventoMascotaService; 
-    private EventoMascotaService eventoMascotaService;
+    private final EventoMascotaService eventoMascotaService;
+    private final EventoMascotaModelAssembler assembler;
 
-    //public eventoMascotaController(EventoMascotaService eventoMascotaService){
-    //    this.eventoMascotaService = eventoMascotaService; 
-    //}
+    public eventoMascotaController(EventoMascotaService eventoMascotaService, EventoMascotaModelAssembler assembler) {
+        this.eventoMascotaService = eventoMascotaService; 
+        this.assembler = assembler;
+    }
 
     @GetMapping    
-    public ResponseEntity<ApiResult<List<EventoMascota>>> retornaTodosLosEventosDeMascotas(){
+    public ResponseEntity<ApiResult<CollectionModel<EntityModel<EventoMascota>>>> retornaTodosLosEventosDeMascotas(){
         try{
             log.info("Get / eventos-mascotas - Se obtiene la lista de eventos de mascotas");
             List<EventoMascota> eventos = eventoMascotaService.getEventosMascotas();
@@ -47,8 +54,24 @@ public class eventoMascotaController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ApiResult<>("No se encontraron eventos de mascotas", null, HttpStatus.NOT_FOUND.value()));
             }
-            return ResponseEntity.ok(new ApiResult<>("Lista de Eventos Mascotas encontrada es : ", eventos, HttpStatus.OK.value()));
 
+            List<EntityModel<EventoMascota>> models = eventos.stream()
+                    .map(assembler::toModel)
+                    .collect(Collectors.toList());
+
+            //return ResponseEntity.ok(new ApiResult<>("Lista de Eventos Mascotas encontrada es : ", eventos, HttpStatus.OK.value()));
+            CollectionModel<EntityModel<EventoMascota>> collectionModel = CollectionModel.of(models,
+                linkTo(methodOn(eventoMascotaController.class)
+                .retornaTodosLosEventosDeMascotas())
+                .withSelfRel());
+
+                ApiResult<CollectionModel<EntityModel<EventoMascota>>> apiResult = new ApiResult<>(
+                "Lista de Eventos Mascotas encontrada",
+                collectionModel,
+                HttpStatus.OK.value()
+            );
+                return ResponseEntity.ok(apiResult);
+           
         }
         catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
